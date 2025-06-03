@@ -1,0 +1,133 @@
+version: '3.8'
+
+services:
+  # ========== WIZARD PACS ENGINE (DCM4CHEE OCULTO) ==========
+  wizard-pacs-engine:
+    image: dcm4che/dcm4chee-arc-psql:5.31.0
+    container_name: wizard-pacs-engine
+    restart: unless-stopped
+    environment:
+      # ✅ BASE DE DATOS WIZARD_PACS
+      - POSTGRES_HOST=host.docker.internal
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=wizard_pacs
+      - POSTGRES_USER=wizard_pacs_engine
+      - POSTGRES_PASSWORD=wizard_pacs_secure_2024
+      - POSTGRES_SCHEMA=wizard_pacs_engine
+      
+      # Admin credentials (naming Wizard)
+      - WILDFLY_ADMIN_USER=wizard_admin
+      - WILDFLY_ADMIN_PASSWORD=wizard_pacs_2024
+      
+      # Puertos
+      - HTTP_PORT=8080
+      - DICOM_PORT=11112
+      
+      # Branding personalizado
+      - WIZARD_PACS_ENGINE=true
+      - WIZARD_BRANDING=enabled
+      - ARCHIVE_DEVICE_NAME=WIZARD_PACS_ENGINE
+      - ARCHIVE_AE_TITLE=WIZARD_PACS
+      
+      # Optimización
+      - JAVA_OPTS=-Xms1g -Xmx2g -XX:MetaspaceSize=256m
+      
+      # Integración
+      - WIZARD_API_URL=http://wizard-core:8080
+      
+    ports:
+      - "8081:8080"    # PACS Engine Web Interface
+      - "11112:11112"  # DICOM Port
+      - "9990:9990"    # Management (solo desarrollo)
+    volumes:
+      - wizard-pacs-storage:/storage
+      - ./docker/logs/pacs-engine:/opt/wildfly/standalone/log
+      - ./docker/config/pacs-engine:/opt/wildfly/standalone/configuration/dcm4chee-arc
+    networks:
+      - wizard-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/dcm4chee-arc/aets"]
+      interval: 30s
+      timeout: 15s
+      retries: 10
+      start_period: 3m
+
+  # ========== WIZARD CORE APPLICATION ==========
+  wizard-core:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wizard-core
+    restart: unless-stopped
+    environment:
+      # Spring profiles
+      - SPRING_PROFILES_ACTIVE=docker,pacs
+      
+      # ✅ MISMA BASE DE DATOS, SCHEMA SEPARADO
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5432/wizard_pacs?currentSchema=wizard_app
+      - SPRING_DATASOURCE_USERNAME=wizard_app
+      - SPRING_DATASOURCE_PASSWORD=wizard_app_2024
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_HIBERNATE_DEFAULT_SCHEMA=wizard_app
+      
+      # Configuración PACS Engine
+      - WIZARD_PACS_ENGINE_URL=http://wizard-pacs-engine:8080
+      - WIZARD_PACS_ENGINE_USERNAME=wizard_admin
+      - WIZARD_PACS_ENGINE_PASSWORD=wizard_pacs_2024
+      - WIZARD_PACS_ENGINE_AE_TITLE=WIZARD_PACS
+      - WIZARD_PACS_AUTO_INIT=true
+      
+      # Almacenamiento
+      - WIZARD_PACS_STORAGE_LOCATION=/shared/wizard-storage
+      - WIZARD_PACS_ENGINE_STORAGE=/shared/pacs-storage
+      
+      # Visor
+      - WIZARD_PACS_VIEWER_BASE_URL=http://localhost:3000
+      
+      # Logging
+      - LOGGING_LEVEL_COM_WIZARD=DEBUG
+      - LOGGING_LEVEL_ROOT=INFO
+      
+    ports:
+      - "8080:8080"
+    volumes:
+      - wizard-app-storage:/shared/wizard-storage
+      - wizard-pacs-storage:/shared/pacs-storage
+      - ./docker/logs/wizard:/app/logs
+    networks:
+      - wizard-network
+    depends_on:
+      - wizard-pacs-engine
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 2m
+
+  # ========== WIZARD DICOM VIEWER ==========
+  wizard-dicom-viewer:
+    image: ohif/viewer:v3.8.0-beta.36
+    container_name: wizard-dicom-viewer
+    restart: unless-stopped
+    environment:
+      - APP_CONFIG_PATH=/usr/share/nginx/html/wizard-viewer-config.js
+    ports:
+      - "3000:80"
+    volumes:
+      - ./docker/config/wizard-viewer-config.js:/usr/share/nginx/html/wizard-viewer-config.js:ro
+    networks:
+      - wizard-network
+    depends_on:
+      - wizard-pacs-engine
+
+volumes:
+  wizard-app-storage:
+    driver: local
+  wizard-pacs-storage:
+    driver: local
+
+networks:
+  wizard-network:
+    driver: bridge
+    name: wizard-pacs-network

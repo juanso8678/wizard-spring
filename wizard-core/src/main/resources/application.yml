@@ -1,0 +1,175 @@
+# ============================================================================
+# application.yml - Configuración limpia y sin errores
+# ============================================================================
+
+server:
+  port: 8082
+
+spring:
+  application:
+    name: wizard-core
+    
+  datasource:
+    url: jdbc:postgresql://localhost:5432/wizard_db
+    username: wizard_user
+    password: 4dminwzrd
+    hikari:
+      maximum-pool-size: 20
+      minimum-idle: 5
+      connection-timeout: 30000
+      
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        
+  jackson:
+    serialization:
+      fail-on-empty-beans: false
+      
+  task:
+    scheduling:
+      pool:
+        size: 5
+    execution:
+      pool:
+        core-size: 10
+        max-size: 20
+        queue-capacity: 100
+
+# ============================================================================
+# Configuración de Swagger/OpenAPI
+# ============================================================================
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    display-request-duration: true
+    enabled: true
+    doc-expansion: none
+    show-extensions: true
+    syntax-highlight:
+      theme: monokai
+  api-docs:
+    path: /api-docs
+
+# ============================================================================
+# Configuración de Logging
+# ============================================================================
+logging:
+  level:
+    com.wizard.core.modules.pacs: DEBUG
+    com.wizard.core.modules.pacs.integration: DEBUG
+    com.wizard.core.modules.pacs.service: INFO
+    org.springframework.retry: DEBUG
+    org.springframework.web.client: DEBUG
+    org.springframework.scheduling: INFO
+  pattern:
+    console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+    file: "%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
+  file:
+    name: logs/wizard-pacs.log
+    max-size: 100MB
+    max-history: 30
+
+# ============================================================================
+# Información de la aplicación
+# ============================================================================
+info:
+  title: Wizard API
+  description: API de gestión de organizaciones y sedes con módulo PACS integrado
+  version: 1.0.0
+
+# ============================================================================
+# Configuración de Spring Actuator
+# ============================================================================
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+      base-path: /actuator
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+    info:
+      enabled: true
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+  health:
+    wizard-pacs-engine:
+      enabled: true
+  metrics:
+    tags:
+      application: wizard-pacs
+      environment: development
+  prometheus:
+    metrics:
+      export:
+        enabled: true
+
+# ============================================================================
+# Configuración de Wizard PACS
+# ============================================================================
+wizard:
+  pacs:
+    engine:
+      name: "Wizard PACS Engine"
+      url: http://wizard-pacs-engine:8080
+      username: wizard_admin
+      password: wizard_pacs_2024
+      default-ae-title: WIZARD_PACS
+      timeout-seconds: 30
+      retry-attempts: 3
+      auto-init: true
+      version: "2.0.0"
+      vendor: "Wizard Healthcare Solutions"
+      connection-timeout: 30000
+      read-timeout: 60000
+      write-timeout: 60000
+      retry:
+        max-attempts: 3
+        backoff-delay: 2000
+        backoff-multiplier: 2.0
+        max-backoff-delay: 10000
+      health-check:
+        interval: 30000
+        timeout: 10000
+        failure-threshold: 3
+      batch:
+        echo-pool-size: 5
+        echo-timeout: 15000
+        max-concurrent-operations: 10
+      
+    storage:
+      location: /shared/wizard-storage
+      engine-storage: /shared/pacs-storage
+      max-file-size: 1073741824
+      allowed-extensions: 
+        - dcm
+        - dicom
+      auto-cleanup: true
+      retention-days: 365
+      
+    viewer:
+      base-url: http://localhost:3000
+      title: "Wizard DICOM Viewer"
+      session-timeout-minutes: 30
+      enable-fullscreen: true
+      show-study-list: true
+      max-web-workers: 3
+      
+    integration:
+      auto-create-ae-titles: true
+      sync-studies: true
+      enable-echo-monitoring: true
+      branding: "Wizard PACS Engine"
+      batch-echo-interval: 300
+      enable-audit-log: true
