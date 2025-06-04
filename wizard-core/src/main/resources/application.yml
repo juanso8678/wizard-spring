@@ -120,51 +120,38 @@ management:
 # ============================================================================
 wizard:
   pacs:
+    # Motor PACS (DCM4CHEE en Docker)
     engine:
-      name: "Wizard PACS Engine"
-      url: http://wizard-pacs-engine:8080
-      username: wizard_admin
-      password: wizard_pacs_2024
-      default-ae-title: WIZARD_PACS
-      timeout-seconds: 30
-      retry-attempts: 3
-      auto-init: true
-      version: "2.0.0"
-      vendor: "Wizard Healthcare Solutions"
-      connection-timeout: 30000
-      read-timeout: 60000
-      write-timeout: 60000
-      retry:
-        max-attempts: 3
-        backoff-delay: 2000
-        backoff-multiplier: 2.0
-        max-backoff-delay: 10000
-      health-check:
-        interval: 30000
-        timeout: 10000
-        failure-threshold: 3
-      batch:
-        echo-pool-size: 5
-        echo-timeout: 15000
-        max-concurrent-operations: 10
-      
-    storage:
-      location: /shared/wizard-storage
-      engine-storage: /shared/pacs-storage
-      max-file-size: 1073741824
-      allowed-extensions: 
-        - dcm
-        - dicom
-      auto-cleanup: true
-      retention-days: 365
-      
+      url: http://localhost:8083  # DCM4CHEE corriendo en Docker puerto 8080
+      username: admin
+      password: admin
+      defaultAeTitle: WIZARD_PACS
+      timeout: 30000
+      retryAttempts: 3
+      retryDelay: 2000
+    
+    # Visor web
     viewer:
-      base-url: http://localhost:3000
-      title: "Wizard DICOM Viewer"
-      session-timeout-minutes: 30
-      enable-fullscreen: true
-      show-study-list: true
-      max-web-workers: 3
+      baseUrl: http://localhost:8080/wizard-viewer
+      sessionTimeoutMinutes: 60
+      maxConcurrentSessions: 100
+    
+    # Configuraciones DICOM
+    dicom:
+      maxConnections: 50
+      connectionTimeout: 30000
+      responseTimeout: 60000
+      idleTimeout: 30000
+      # SOP Classes soportadas
+      supportedSopClasses:
+        - "1.2.840.10008.5.1.4.1.1.2"      # CT Image Storage
+        - "1.2.840.10008.5.1.4.1.1.1.2"    # Enhanced CT Image Storage
+        - "1.2.840.10008.5.1.4.1.1.4"      # MR Image Storage
+        - "1.2.840.10008.5.1.4.1.1.1"      # Computed Radiography Image Storage
+        - "1.2.840.10008.5.1.4.1.1.12.1"   # X-Ray Angiographic Image Storage
+        - "1.2.840.10008.5.1.4.1.1.7"      # Secondary Capture Image Storage
+        - "1.2.840.10008.5.1.4.1.1.104.1"  # Encapsulated PDF Storage
+
       
     integration:
       auto-create-ae-titles: true

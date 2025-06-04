@@ -1,0 +1,433 @@
+/* ============================================================================
+   ESTILOS GLOBALES - WIZARD Admin Panel
+   ============================================================================ */
+
+/* Variables CSS personalizadas */
+:root {
+  /* Colores principales */
+  --wizard-primary: #1890ff;
+  --wizard-success: #52c41a;
+  --wizard-warning: #faad14;
+  --wizard-error: #ff4d4f;
+  --wizard-info: #1890ff;
+  
+  /* Grises */
+  --wizard-gray-1: #ffffff;
+  --wizard-gray-2: #fafafa;
+  --wizard-gray-3: #f5f5f5;
+  --wizard-gray-4: #f0f0f0;
+  --wizard-gray-5: #d9d9d9;
+  --wizard-gray-6: #bfbfbf;
+  --wizard-gray-7: #8c8c8c;
+  --wizard-gray-8: #595959;
+  --wizard-gray-9: #434343;
+  --wizard-gray-10: #262626;
+  --wizard-gray-11: #1f1f1f;
+  --wizard-gray-12: #141414;
+  --wizard-gray-13: #000000;
+  
+  /* Espaciado */
+  --wizard-spacing-xs: 4px;
+  --wizard-spacing-sm: 8px;
+  --wizard-spacing-md: 16px;
+  --wizard-spacing-lg: 24px;
+  --wizard-spacing-xl: 32px;
+  --wizard-spacing-xxl: 48px;
+  
+  /* Bordes */
+  --wizard-border-radius: 6px;
+  --wizard-border-radius-lg: 8px;
+  --wizard-border-width: 1px;
+  --wizard-border-color: #d9d9d9;
+  
+  /* Sombras */
+  --wizard-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.03);
+  --wizard-shadow: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 6px rgba(0, 0, 0, 0.05);
+  --wizard-shadow-md: 0 1px 2px rgba(0, 0, 0, 0.03), 0 1px 6px rgba(0, 0, 0, 0.05), 0 2px 24px rgba(0, 0, 0, 0.08);
+  --wizard-shadow-lg: 0 6px 16px rgba(0, 0, 0, 0.08), 0 3px 6px rgba(0, 0, 0, 0.05), 0 9px 28px rgba(0, 0, 0, 0.1);
+  
+  /* Transiciones */
+  --wizard-transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+  --wizard-transition-fast: all 0.1s cubic-bezier(0.645, 0.045, 0.355, 1);
+  --wizard-transition-slow: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  
+  /* Z-index */
+  --wizard-z-index-base: 0;
+  --wizard-z-index-affix: 10;
+  --wizard-z-index-back-top: 10;
+  --wizard-z-index-picker-panel: 10;
+  --wizard-z-index-popup-close: 10;
+  --wizard-z-index-modal: 1000;
+  --wizard-z-index-drawer: 1000;
+  --wizard-z-index-popover: 1030;
+  --wizard-z-index-dropdown: 1050;
+  --wizard-z-index-tooltip: 1070;
+  --wizard-z-index-notification: 1080;
+  --wizard-z-index-message: 1090;
+}
+
+/* Reset y configuración base */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+  font-size: 14px;
+  font-variant: tabular-nums;
+  line-height: 1.5715;
+  color: rgba(0, 0, 0, 0.85);
+  background-color: #f0f2f5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Clases utilitarias personalizadas */
+.wizard-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #d9d9d9 transparent;
+}
+
+.wizard-scroll::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.wizard-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.wizard-scroll::-webkit-scrollbar-thumb {
+  background-color: #d9d9d9;
+  border-radius: 3px;
+}
+
+.wizard-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: #bfbfbf;
+}
+
+/* Clases de espaciado */
+.wizard-mt-xs { margin-top: var(--wizard-spacing-xs) !important; }
+.wizard-mt-sm { margin-top: var(--wizard-spacing-sm) !important; }
+.wizard-mt-md { margin-top: var(--wizard-spacing-md) !important; }
+.wizard-mt-lg { margin-top: var(--wizard-spacing-lg) !important; }
+.wizard-mt-xl { margin-top: var(--wizard-spacing-xl) !important; }
+
+.wizard-mb-xs { margin-bottom: var(--wizard-spacing-xs) !important; }
+.wizard-mb-sm { margin-bottom: var(--wizard-spacing-sm) !important; }
+.wizard-mb-md { margin-bottom: var(--wizard-spacing-md) !important; }
+.wizard-mb-lg { margin-bottom: var(--wizard-spacing-lg) !important; }
+.wizard-mb-xl { margin-bottom: var(--wizard-spacing-xl) !important; }
+
+.wizard-ml-xs { margin-left: var(--wizard-spacing-xs) !important; }
+.wizard-ml-sm { margin-left: var(--wizard-spacing-sm) !important; }
+.wizard-ml-md { margin-left: var(--wizard-spacing-md) !important; }
+.wizard-ml-lg { margin-left: var(--wizard-spacing-lg) !important; }
+.wizard-ml-xl { margin-left: var(--wizard-spacing-xl) !important; }
+
+.wizard-mr-xs { margin-right: var(--wizard-spacing-xs) !important; }
+.wizard-mr-sm { margin-right: var(--wizard-spacing-sm) !important; }
+.wizard-mr-md { margin-right: var(--wizard-spacing-md) !important; }
+.wizard-mr-lg { margin-right: var(--wizard-spacing-lg) !important; }
+.wizard-mr-xl { margin-right: var(--wizard-spacing-xl) !important; }
+
+.wizard-p-xs { padding: var(--wizard-spacing-xs) !important; }
+.wizard-p-sm { padding: var(--wizard-spacing-sm) !important; }
+.wizard-p-md { padding: var(--wizard-spacing-md) !important; }
+.wizard-p-lg { padding: var(--wizard-spacing-lg) !important; }
+.wizard-p-xl { padding: var(--wizard-spacing-xl) !important; }
+
+/* Clases de texto */
+.wizard-text-center { text-align: center !important; }
+.wizard-text-left { text-align: left !important; }
+.wizard-text-right { text-align: right !important; }
+
+.wizard-text-primary { color: var(--wizard-primary) !important; }
+.wizard-text-success { color: var(--wizard-success) !important; }
+.wizard-text-warning { color: var(--wizard-warning) !important; }
+.wizard-text-error { color: var(--wizard-error) !important; }
+.wizard-text-muted { color: var(--wizard-gray-7) !important; }
+
+.wizard-text-xs { font-size: 12px !important; }
+.wizard-text-sm { font-size: 13px !important; }
+.wizard-text-md { font-size: 14px !important; }
+.wizard-text-lg { font-size: 16px !important; }
+.wizard-text-xl { font-size: 18px !important; }
+
+.wizard-font-weight-normal { font-weight: 400 !important; }
+.wizard-font-weight-medium { font-weight: 500 !important; }
+.wizard-font-weight-bold { font-weight: 600 !important; }
+
+/* Clases de layout */
+.wizard-full-height { height: 100vh !important; }
+.wizard-full-width { width: 100% !important; }
+
+.wizard-flex { display: flex !important; }
+.wizard-flex-column { flex-direction: column !important; }
+.wizard-flex-center { 
+  display: flex !important; 
+  align-items: center !important; 
+  justify-content: center !important; 
+}
+.wizard-flex-between { 
+  display: flex !important; 
+  justify-content: space-between !important; 
+  align-items: center !important; 
+}
+.wizard-flex-wrap { flex-wrap: wrap !important; }
+.wizard-flex-1 { flex: 1 !important; }
+
+/* Estados de elementos */
+.wizard-loading {
+  position: relative;
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.wizard-loading::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid var(--wizard-primary);
+  border-radius: 50%;
+  animation: wizard-spin 1s linear infinite;
+}
+
+@keyframes wizard-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.wizard-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.wizard-clickable {
+  cursor: pointer;
+  transition: var(--wizard-transition);
+}
+
+.wizard-clickable:hover {
+  opacity: 0.8;
+}
+
+/* Efectos visuales */
+.wizard-card-hover {
+  transition: var(--wizard-transition);
+  cursor: pointer;
+}
+
+.wizard-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--wizard-shadow-lg);
+}
+
+.wizard-fade-in {
+  animation: wizard-fade-in 0.3s ease-in-out;
+}
+
+@keyframes wizard-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.wizard-slide-up {
+  animation: wizard-slide-up 0.3s ease-out;
+}
+
+@keyframes wizard-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Personalizaciones específicas de Ant Design */
+
+/* Sidebar personalizado */
+.ant-layout-sider {
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Menu personalizado */
+.ant-menu-inline .ant-menu-item {
+  margin: 4px 8px;
+  border-radius: var(--wizard-border-radius);
+}
+
+.ant-menu-inline .ant-menu-submenu-title {
+  margin: 4px 8px;
+  border-radius: var(--wizard-border-radius);
+}
+
+/* Cards personalizados */
+.ant-card {
+  border-radius: var(--wizard-border-radius-lg);
+  transition: var(--wizard-transition);
+}
+
+.ant-card-head {
+  border-bottom: 1px solid var(--wizard-border-color);
+}
+
+/* Botones personalizados */
+.ant-btn {
+  border-radius: var(--wizard-border-radius);
+  transition: var(--wizard-transition);
+}
+
+.ant-btn-primary {
+  background: var(--wizard-primary);
+  border-color: var(--wizard-primary);
+}
+
+/* Inputs personalizados */
+.ant-input,
+.ant-input-password,
+.ant-select-selector {
+  border-radius: var(--wizard-border-radius);
+  transition: var(--wizard-transition);
+}
+
+/* Tables personalizadas */
+.ant-table {
+  border-radius: var(--wizard-border-radius-lg);
+}
+
+.ant-table-thead > tr > th {
+  background: var(--wizard-gray-2);
+  font-weight: 600;
+}
+
+/* Modales personalizados */
+.ant-modal-content {
+  border-radius: var(--wizard-border-radius-lg);
+}
+
+/* Notificaciones personalizadas */
+.ant-notification {
+  border-radius: var(--wizard-border-radius-lg);
+}
+
+/* Breadcrumbs personalizados */
+.ant-breadcrumb {
+  margin-bottom: var(--wizard-spacing-md);
+}
+
+/* Customización para modo oscuro */
+.ant-layout.dark {
+  background: #141414;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .wizard-mobile-hidden {
+    display: none !important;
+  }
+  
+  .wizard-mobile-full-width {
+    width: 100% !important;
+  }
+  
+  .wizard-mobile-center {
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .wizard-sm-hidden {
+    display: none !important;
+  }
+  
+  .wizard-p-sm-xs {
+    padding: var(--wizard-spacing-xs) !important;
+  }
+  
+  .wizard-m-sm-xs {
+    margin: var(--wizard-spacing-xs) !important;
+  }
+}
+
+/* Print styles */
+@media print {
+  .wizard-no-print {
+    display: none !important;
+  }
+  
+  .ant-layout-sider,
+  .ant-layout-header {
+    display: none !important;
+  }
+  
+  .ant-layout-content {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+
+/* Accessibility improvements */
+.wizard-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Focus styles */
+.wizard-focus-visible:focus-visible {
+  outline: 2px solid var(--wizard-primary);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .ant-btn {
+    border-width: 2px;
+  }
+  
+  .ant-card {
+    border-width: 2px;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

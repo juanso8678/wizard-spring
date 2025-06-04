@@ -1,0 +1,78 @@
+# docker-compose-official.yml - Stack completo DCM4CHE oficial
+# Basado en: https://github.com/dcm4che-dockerfiles/dcm4chee-arc-psql
+
+services:
+  # ========== LDAP ==========
+  ldap:
+    image: dcm4che/slapd-dcm4chee:2.6.7-33.1
+    container_name: wizard-ldap
+    ports:
+      - "389:389"
+      - "636:636"
+    environment:
+      STORAGE_DIR: /storage/fs1
+    volumes:
+      - wizard_ldap_data:/var/lib/openldap/openldap-data
+      - wizard_ldap_config:/etc/openldap/slapd.d
+    networks:
+      - wizard-net
+    restart: unless-stopped
+
+  # ========== POSTGRESQL ==========
+  db:
+    image: dcm4che/postgres-dcm4chee:17.1-33
+    container_name: wizard-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: pacsdb
+      POSTGRES_USER: pacs
+      POSTGRES_PASSWORD: pacs
+    volumes:
+      - wizard_db_data:/var/lib/postgresql/data
+    networks:
+      - wizard-net
+    restart: unless-stopped
+
+  # ========== PACS ENGINE ==========
+  arc:
+    image: dcm4che/dcm4chee-arc-psql:5.33.1
+    container_name: wizard-arc
+    ports:
+      - "8083:8080"
+      - "8443:8443"
+      - "9990:9990"
+      - "9995:9995"
+      - "11112:11112"
+      - "2762:2762"
+      - "2575:2575"
+      - "12575:12575"
+    environment:
+      POSTGRES_DB: pacsdb
+      POSTGRES_USER: pacs
+      POSTGRES_PASSWORD: pacs
+      POSTGRES_HOST: db
+      WILDFLY_CHOWN: /opt/wildfly/standalone /storage
+      WILDFLY_WAIT_FOR: ldap:389 db:5432
+    depends_on:
+      - ldap
+      - db
+    volumes:
+      - ../storage/dicom:/storage
+      - ../storage/logs:/opt/wildfly/standalone/log
+      - wizard_arc_data:/opt/wildfly/standalone
+    networks:
+      - wizard-net
+    restart: unless-stopped
+
+# ========== VOLUMES ==========
+volumes:
+  wizard_ldap_data:
+  wizard_ldap_config:
+  wizard_db_data:
+  wizard_arc_data:
+
+# ========== NETWORKS ==========
+networks:
+  wizard-net:
+    driver: bridge

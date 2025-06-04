@@ -14,7 +14,7 @@ public class OpenAPIConfig {
                 .title("WIZARD API")
                 .version("1.0")
                 .description("Documentación de la API para WIZARD")
-                .contact(new Contact().name("Equipo WIZARD").email("soporte@wizard.com"))
+                .contact(new Contact().name("Equipo WIZARD").email("soporte@wizard-medial.es"))
             );
     }
 }

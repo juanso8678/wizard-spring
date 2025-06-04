@@ -1,0 +1,19 @@
+wizard-pacs-engine  | Importing keystore /opt/wildfly/standalone/configuration/keystores/cacerts.p12 to /opt/java/openjdk/lib/security/cacerts...
+wizard-pacs-engine  | Entry for alias mykey successfully imported.
+wizard-pacs-engine  | Import command completed:  1 entries successfully imported, 0 entries failed or cancelled
+wizard-pacs-engine  | Waiting for wizard-pacs-ldap:389 ...
+wizard-pacs-engine  | done
+wizard-pacs-engine  | Starting Wildfly 26.1.2.Final
+wizard-pacs-engine  | JAVA_OPTS already set in environment; overriding default settings with values: -server -Xms512m -Xmx1024m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Djboss.bind.address=0.0.0.0 -Djboss.bind.address.management=0.0.0.0 -Djboss.bind.address.private=0.0.0.0 -Djboss.default.multicast.address=230.0.0.4
+wizard-pacs-engine  | =========================================================================
+wizard-pacs-engine  | 
+wizard-pacs-engine  |   JBoss Bootstrap Environment
+wizard-pacs-engine  | 
+wizard-pacs-engine  |   JBOSS_HOME: /opt/wildfly
+wizard-pacs-engine  | 
+wizard-pacs-engine  |   JAVA: /opt/java/openjdk/bin/java
+wizard-pacs-engine  | 
+wizard-pacs-engine  |   JAVA_OPTS:  -server -Xms512m -Xmx1024m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Djboss.bind.address=0.0.0.0 -Djboss.bind.address.management=0.0.0.0 -Djboss.bind.address.private=0.0.0.0 -Djboss.default.multicast.address=230.0.0.4  --add-exports=java.desktop/sun.awt=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.url.ldap=ALL-UNNAMED --add-exports=java.naming/com.sun.jndi.url.ldaps=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens=java.base/java.lang.invoke=ALL-UNNAMED --add-opens=java.base/java.lang.reflect=ALL-UNNAMED --add-opens=java.base/java.io=ALL-UNNAMED --add-opens=java.base/java.security=ALL-UNNAMED --add-opens=java.base/java.util=ALL-UNNAMED --add-opens=java.base/java.util.concurrent=ALL-UNNAMED --add-opens=java.management/javax.management=ALL-UNNAMED --add-opens=java.naming/javax.naming=ALL-UNNAMED -Djava.security.manager=allow
+wizard-pacs-engine  | 
+wizard-pacs-engine  | =========================================================================
+wizard-pacs-engine  | 

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/wizard-icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="WIZARD PACS System - Panel de Administración para Sistema de Gestión de Imágenes Médicas" />
+    <meta name="keywords" content="PACS, DICOM, Imágenes Médicas, Sistema Hospitalario, Radiología" />
+    <meta name="author" content="Wizard Healthcare Solutions" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="WIZARD PACS System" />
+    <meta property="og:description" content="Panel de Administración para Sistema de Gestión de Imágenes Médicas" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="WIZARD PACS System" />
+    <meta property="twitter:description" content="Panel de Administración para Sistema de Gestión de Imágenes Médicas" />
+    
+    <!-- Configuración PWA -->
+    <meta name="theme-color" content="#1890ff" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="WIZARD PACS" />
+    
+    <!-- Preload de fuentes importantes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- Configuración de seguridad -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    
+    <title>WIZARD PACS System - Panel de Administración</title>
+    
+    <!-- Estilos inline críticos para evitar FOUC -->
+    <style>
+      /* Reset básico y configuración inicial */
+      * {
+        box-sizing: border-box;
+      }
+      
+      html, body {
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 
+                     'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 
+                     'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        height: 100%;
+        background-color: #f0f2f5;
+      }
+      
+      #root {
+        height: 100%;
+        min-height: 100vh;
+      }
+      
+      /* Loading spinner inicial */
+      .initial-loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        color: white;
+      }
+      
+      .initial-loading .logo {
+        font-size: 48px;
+        margin-bottom: 20px;
+        animation: pulse 2s infinite;
+      }
+      
+      .initial-loading .text {
+        font-size: 18px;
+        font-weight: 500;
+        margin-bottom: 30px;
+      }
+      
+      .initial-loading .spinner {
+        width: 40px;
+        height: 40px;
+        border: 3px solid rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        border-top-color: white;
+        animation: spin 1s ease-in-out infinite;
+      }
+      
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+      
+      @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+      }
+      
+      /* Ocultar el loading cuando React tome control */
+      .wizard-app {
+        min-height: 100vh;
+      }
+      
+      /* Estilos para modo oscuro */
+      @media (prefers-color-scheme: dark) {
+        body {
+          background-color: #141414;
+          color: #ffffff;
+        }
+      }
+      
+      /* Responsive design básico */
+      @media (max-width: 768px) {
+        .initial-loading .logo {
+          font-size: 36px;
+        }
+        .initial-loading .text {
+          font-size: 16px;
+          text-align: center;
+          padding: 0 20px;
+        }
+      }
+    </style>
+  </head>
+  
+  <body>
+    <!-- Contenedor principal de React -->
+    <div id="root">
+      <!-- Loading inicial mientras carga React -->
+      <div class="initial-loading" id="initial-loading">
+        <div class="logo">🏥</div>
+        <div class="text">WIZARD PACS System</div>
+        <div class="text" style="font-size: 14px; opacity: 0.8;">Cargando panel de administración...</div>
+        <div class="spinner"></div>
+      </div>
+    </div>
+    
+    <!-- Script para ocultar loading inicial cuando React esté listo -->
+    <script>
+      // Ocultar el loading inicial después de que React tome control
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          const initialLoading = document.getElementById('initial-loading');
+          if (initialLoading) {
+            initialLoading.style.opacity = '0';
+            initialLoading.style.transition = 'opacity 0.5s ease-out';
+            setTimeout(function() {
+              if (initialLoading.parentNode) {
+                initialLoading.parentNode.removeChild(initialLoading);
+              }
+            }, 500);
+          }
+        }, 1000); // Mostrar por al menos 1 segundo
+      });
+      
+      // Configuración global para debugging en desarrollo
+      if (location.hostname === 'localhost' || location.hostname === '127.0.0.1') {
+        window.__WIZARD_DEBUG__ = true;
+        console.log('%c🚀 WIZARD PACS System', 'color: #1890ff; font-size: 20px; font-weight: bold;');
+        console.log('%cModo de desarrollo activado', 'color: #52c41a; font-weight: bold;');
+        console.log('📚 Documentación: https://docs.wizard-pacs.com');
+        console.log('🐛 Reportar bugs: https://github.com/wizard-pacs/issues');
+      }
+      
+      // Service Worker registration (para PWA en el futuro)
+      if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
+        window.addEventListener('load', function() {
+          navigator.serviceWorker.register('/sw.js')
+            .then(function(registration) {
+              console.log('SW registered: ', registration);
+            })
+            .catch(function(registrationError) {
+              console.log('SW registration failed: ', registrationError);
+            });
+        });
+      }
+    </script>
+    
+    <!-- Vite script injection point -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

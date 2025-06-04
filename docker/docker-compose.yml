@@ -1,0 +1,155 @@
+# docker/docker-compose.yml - Wizard PACS Engine con PostgreSQL local
+# VERSIÓN CORREGIDA - Conexión a PostgreSQL en el host Mac
+
+services:
+  # ========== WIZARD PACS LDAP ==========
+  wizard-pacs-ldap:
+    image: dcm4che/slapd-dcm4chee:2.6.5-31.0
+    container_name: wizard-pacs-ldap
+    ports:
+      - "389:389"
+    environment:
+      STORAGE_DIR: /storage/fs1
+    volumes:
+      - wizard_ldap_data:/var/lib/ldap
+      - wizard_ldap_config:/etc/ldap/slapd.d
+    networks:
+      - wizard-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "nc -z localhost 389"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # ========== WIZARD PACS ENGINE ==========
+  wizard-pacs-engine:
+    image: dcm4che/dcm4chee-arc-psql:5.34.0-secure
+    container_name: wizard-pacs-engine
+    ports:
+      - "8083:8080"    # Wizard PACS Web UI
+      - "8443:8443"    # HTTPS
+      - "9999:9990"    # Management interface
+      - "9995:9993"    # Management HTTPS
+      - "11112:11112"  # DICOM port
+    environment:
+      # ========== CONEXIÓN A POSTGRESQL LOCAL ==========
+      POSTGRES_DB: wizard_pacs
+      POSTGRES_USER: wizard_user
+      POSTGRES_PASSWORD: 4dminwzrd
+      POSTGRES_HOST: host.docker.internal  # ✅ CORREGIDO: Conexión al PostgreSQL del host
+      POSTGRES_PORT: 5432
+      
+      # ========== CONFIGURACIÓN WILDFLY ==========
+      WILDFLY_CHOWN: /opt/wildfly/standalone /storage
+      WILDFLY_WAIT_FOR: wizard-pacs-ldap:389
+      
+      # ========== CONFIGURACIÓN LDAP ==========
+      LDAP_URL: ldap://wizard-pacs-ldap:389/dc=dcm4che,dc=org
+      LDAP_ROOTDN: cn=admin,dc=dcm4che,dc=org
+      LDAP_ROOTPW: secret
+      LDAP_CONFIGDN: cn=Configuration,dc=dcm4che,dc=org
+      LDAP_DISABLE_HOSTNAME_VERIFICATION: "true"
+      
+      # ========== CONFIGURACIÓN ESPECÍFICA DCM4CHEE ==========
+      DCM4CHEE_ARC_DEVICE_NAME: dcm4chee-arc
+      DCM4CHEE_ARC_AETITLE: DCM4CHEE
+      DCM4CHEE_ARC_DICOM_HOSTNAME: wizard-pacs-engine
+      DCM4CHEE_ARC_DICOM_PORT: 11112
+      
+      # ========== CONFIGURACIÓN JAVA OPTIMIZADA ==========
+      JAVA_OPTS: >-
+        -server
+        -Xms512m
+        -Xmx1024m
+        -XX:MetaspaceSize=96M
+        -XX:MaxMetaspaceSize=256m
+        -Djava.net.preferIPv4Stack=true
+        -Djboss.modules.system.pkgs=org.jboss.byteman
+        -Djava.awt.headless=true
+        -Dfile.encoding=UTF-8
+        -Djboss.bind.address=0.0.0.0
+        -Djboss.bind.address.management=0.0.0.0
+        -Djboss.bind.address.private=0.0.0.0
+        -Djboss.default.multicast.address=230.0.0.4
+      
+      # ========== CONFIGURACIÓN WIZARD PACS ENGINE ==========
+      ARCHIVE_DEVICE_NAME: dcm4chee-arc
+      DICOM_HOST: wizard-pacs-engine
+      DICOM_PORT: 11112
+      
+      # ========== CONFIGURACIÓN ALTERNATIVA - JSON CONFIG ==========
+      JAVA_OPTS_APPEND: "-Dorg.dcm4che3.conf.filename=/opt/wildfly/standalone/configuration/dcm4chee-arc/sample-config.json"
+      
+      # ========== CONFIGURACIÓN ADICIONAL ==========
+      # Configuración de timezone
+      TZ: America/Mexico_City
+      
+      # Variables específicas de DCM4CHEE
+      POSTGRES_JDBC_PARAMS: "?ApplicationName=wizard-pacs-engine"
+      
+    volumes:
+      # ========== ALMACENAMIENTO WIZARD PACS ==========
+      # Estudios DICOM - acceso directo desde tu filesystem
+      - ../storage/dicom:/storage
+      
+      # Logs del PACS Engine
+      - ../storage/logs:/opt/wildfly/standalone/log
+      
+      # Configuración persistente del motor PACS
+      - wizard_pacs_engine:/opt/wildfly/standalone
+      
+    networks:
+      - wizard-network
+    depends_on:
+      wizard-pacs-ldap:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/dcm4chee-arc/aets"]  # ✅ CORREGIDO: Puerto interno 8080
+      interval: 45s
+      timeout: 20s
+      retries: 20
+      start_period: 600s  # 10 minutos para arranque completo e inicialización LDAP
+    
+    # ✅ AGREGADO: Enlaces de red para resolver nombres
+    links:
+      - wizard-pacs-ldap:ldap
+      - wizard-pacs-ldap:slapd
+    
+    # ✅ AGREGADO: Configuración para acceso al host y LDAP
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    
+    # Configuración de recursos
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+        reservations:
+          memory: 512M
+
+# ========== VOLUMES WIZARD PACS ==========
+volumes:
+  # Datos del directorio LDAP
+  wizard_ldap_data:
+    driver: local
+    
+  # Configuración del directorio LDAP  
+  wizard_ldap_config:
+    driver: local
+    
+  # Configuración del motor PACS Wizard
+  wizard_pacs_engine:
+    driver: local
+
+# ========== NETWORK WIZARD ==========
+networks:
+  wizard-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+          gateway: 172.20.0.1
+    driver_opts:
+      com.docker.network.bridge.name: wizard-br0

@@ -18,15 +18,13 @@ public class WebMvcConfig implements WebMvcConfigurer {  // ✅ CAMBIÉ EL NOMBR
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-       registry.addInterceptor(permissionInterceptor)
-            .addPathPatterns("/api/**")
-            .excludePathPatterns(
-                "/api/auth/**",
-                "/api/test/**",
-                "/api/public/**",
-                "/api/**",
-                "/api/pacs/**",      // ← AGREGAR ESTA LÍNEA
-                "/ping"
-            );
+        registry.addInterceptor(permissionInterceptor)
+                .addPathPatterns("/api/**")
+                .excludePathPatterns(
+                    "/api/auth/**",
+                    "/api/test/**",
+                    "/api/public/**",
+                    "/ping"
+                );
     }
 }
